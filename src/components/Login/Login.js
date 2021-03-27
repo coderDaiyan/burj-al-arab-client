@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
-import { firebaseConfig } from "./firebase.config";
-import { UserContext } from "../../App";
+import React, { useContext } from "react";
 import { useHistory, useLocation } from "react-router";
+import { UserContext } from "../../App";
+import { firebaseConfig } from "./firebase.config";
 
 firebase.initializeApp(firebaseConfig);
 
@@ -26,6 +26,7 @@ const Login = () => {
           email: email,
         };
         setLoggedInUser(signedInUser);
+        storeAuthToken();
         history.replace(from);
       })
       .catch((error) => {
@@ -34,6 +35,20 @@ const Login = () => {
         console.log(errorCode, errorMessage);
       });
   };
+
+  const storeAuthToken = () => {
+    firebase
+      .auth()
+      .currentUser.getIdToken(/* forceRefresh */ true)
+      .then(function (idToken) {
+        sessionStorage.setItem("token", idToken);
+        console.log(idToken);
+      })
+      .catch(function (error) {
+        // Handle error
+      });
+  };
+
   return (
     <div>
       <h1>This is Login</h1>
